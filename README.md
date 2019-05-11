@@ -7,7 +7,7 @@ involved.
 For purposes of this project, to handle rapid prototyping, the following
 will be used:
 - Flask
-- sqlite (relational Databse)
+- dictionary (non-relational Databse)
 
 
 ## Instructions for use:

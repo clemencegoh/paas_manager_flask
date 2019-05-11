@@ -1,24 +1,47 @@
 from flask import Flask, request, render_template, redirect, session
 import sqlite3
+import sys
+import hashlib
+
 
 app = Flask(__name__)
-SQL_DATABASE = "database.db"
+DATABASE = {}
 
 
-def connDB():
-    return sqlite3.connect(SQL_DATABASE)
+def generate_resource_uid(name, number):
+    m = hashlib.sha256()
+    m.update(str(name) + str(number))
+    return m.hexdigest()
 
 
 def initDB():
-    conn = connDB()
-    c = conn.cursor()
-    c.execute(""" CREATE IF NOT EXISTS users(
-                    name TEXT,
-                    type TEXT,
-                    password TEXT,
-                )
-     """)
-    conn.commit()
+    """
+    Initialise database with default admin and user(s)
+    :return:
+    """
+    global DATABASE
+
+    uid0 = generate_resource_uid('Admin1', 0)
+
+    DATABASE["users"] = {
+        "Admin1": {
+            "Type": "admin",
+            "Password": "AdminPass",
+            "Quota": int(sys.maxsize),
+            "Resources": set(uid0)
+        },
+        "User1": {
+            "Type": "user",
+            "Password": "UserPass",
+            "Quota": int(sys.maxsize),
+            "Resources": set()
+        }
+    }
+
+    DATABASE["resources"] = {
+        uid0: "Admin1",
+    }
+
 
 
 @app.route('/', methods=['GET'])
@@ -37,16 +60,23 @@ def login():
     :return:
     """
     if request.method=='GET':
-
         # get info and render
         return render_template('login.html')
     else:
         # auth
+        username = request.form.get('username')
+        password = request.form.get('password')
 
-        # set session
+        if username in DATABASE:
+            if password == DATABASE[username]["Password"]:
+                # success, set session
+                session['name'] = username
 
-        # get info and redirect
-        return redirect(manage_resources(session['name']))
+                # get info and redirect
+                return redirect(manage_resources(username))
+
+        return "Incorrect login credentials"
+
 
 @app.route('/manage', methods=['GET'])
 @app.route('/manage/<name>', methods=['POST', 'DELETE'])
@@ -84,7 +114,7 @@ def manage_users(name='none'):
 
 @app.route('/resources/<user>', methods=['GET'])
 @app.route('/resources/<user>/<uid>', methods=['POST', 'DELETE'])
-def manage_resources(user, uid=0):
+def manage_resources(user, uid=""):
     if request.method=='GET':
         # check auth from session
 
