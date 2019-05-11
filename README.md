@@ -1,5 +1,18 @@
 # paas_manager_flask
-Flask implementation of simple platform as a service backend challenge
+Flask implementation of simple platform as a service backend challenge.
+
+This will be entirely CLI-based, and thus will have minimal to no UI
+involved.
+
+For purposes of this project, to handle rapid prototyping, the following
+will be used:
+- Flask
+- sqlite (relational Databse)
+
+
+## Instructions for use:
+- Command: `python app.py`
+
 
 ## Requirements:
 - User:
