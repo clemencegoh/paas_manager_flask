@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resources</title>
+</head>
+<body>
+    <!-- Create, Delete, List resources -->
+    <div>
+        <span>Resources for {{ user }} | Total: {{ used }}/{{ quota }}</span>
+
+        <table>
+            <tr>
+                <td>
+                    Resource Number
+                </td>
+                <td>
+                    | Unique ID
+                </td>
+            </tr>
+
+            {% for item in resources %}
+                <tr>
+                    <td>
+                        {{ loop.index0 }}
+                    </td>
+                    <td>
+                        | {{ item }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+    <form action="/resources/{{user}}" method="post">
+        <button type="submit">Add New Resource</button>
+    </form>
+</body>
+</html>
