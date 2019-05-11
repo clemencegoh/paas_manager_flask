@@ -17,6 +17,9 @@
                 <td>
                     | Unique ID
                 </td>
+                <td>
+                    | Delete Resource
+                </td>
             </tr>
 
             {% for item in resources %}
@@ -26,6 +29,9 @@
                     </td>
                     <td>
                         | {{ item }}
+                    </td>
+                    <td>
+                        <button onclick="deleteResource({{user}}, {{uid}})">Delete</button>
                     </td>
                 </tr>
             {% endfor %}
@@ -37,3 +43,8 @@
     </form>
 </body>
 </html>
+
+<script>
+    function deleteResource(user, uid){
+    }
+</script>

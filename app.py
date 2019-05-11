@@ -23,7 +23,6 @@ def initDB():
     global DATABASE
 
     uid0 = generate_resource_uid('Admin1', 0)
-    print('generated', uid0)
 
     DATABASE["users"] = {
         "Admin1": {
@@ -86,8 +85,8 @@ def login():
         return "Incorrect login credentials"
 
 
-@app.route('/users', methods=['GET'])
-@app.route('/users/<user>', methods=['POST', 'DELETE'])
+@app.route('/users', methods=['GET', 'POST'])
+@app.route('/users/<user>', methods=['DELETE'])
 def manage_users(user='none'):
     """
     Endpoint for management of all users
@@ -95,29 +94,45 @@ def manage_users(user='none'):
     :return:
     """
 
+    global DATABASE
+
     if request.method=='GET':
         # list users
-        return render_template('users.html')
+        return render_template('users.html', users=DATABASE["users"])
 
-    if request.method=='POST':
-        # create user
+    if request.method=='POST': # create user
+        username = request.form.get('name')
+        password = request.form.get('password')
+        usertype = request.form.get('usertype')
+
         # auth from session
-        # check quota, perform task
-        # redirect with get
-        return manage_users(user)
+        if session['Type'] == 'admin':
+            # perform task
+            DATABASE["users"][username] = {
+                "Type": usertype,
+                "Password": password,
+                "Quota": int(sys.maxsize),
+                "Resources": set([]),
+                "Created": 0,
+            }
+            # redirect with get
+            return redirect(url_for('manage_users'))
+        return Response("Not Authorized", 403)
 
     if request.method=='DELETE':
         # auth from session, deny if not admin
-
-        # check and execute task (deletes user)
-
-        # check if current user still valid
-        if session['name'] == user:
-            session.clear()
-            return index()
-
-        # else, manage own resources
-        return redirect(manage_users(session['name']))
+        if session['Type'] == 'admin':
+            # check and execute task (deletes user)
+            try:
+                del DATABASE[user]
+            except KeyError:
+                print("{} does not exist".format(user))
+            # check if current user still valid
+            if session['name'] == user:
+                session.clear()
+                return redirect(url_for('index'))
+            return redirect(url_for('manage_users'))
+        return Response("Not Authorized", 403)
 
 
 @app.route('/resources/<user>', methods=['GET', 'POST'])
@@ -159,6 +174,7 @@ def manage_resources(user, uid=""):
                 # execute task
                 generated = generate_resource_uid(user, created)
 
+                # todo: figure out why this doesn't change
                 created += 1
                 resources.add(generated)
                 # redirect

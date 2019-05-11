@@ -5,6 +5,56 @@
     <title>Users List</title>
 </head>
 <body>
+    <span>Showing all current users:</span>
+    <div>
+        <table>
+            <tr>
+                <td>
+                    Name
+                </td>
+                <td>
+                    | Type
+                </td>
+            </tr>
 
+
+            {% for key, value in users.items() %}
+            <tr>
+                <td>
+                    {{ key }}
+                </td>
+                <td>
+                    | {{ value["Type"] }}
+                </td>
+                <td>
+                    <button onclick="deleteUser({{key}});">Delete</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div>
+        <span>Create New User?</span>
+        <form action="/users">
+            Name <input type="text" name="name">
+            <br/>
+            Password <input type="text" name="password">
+            <br/>
+            User Type
+            <select name="usertype">
+                <option value="admin">Admin</option>
+                <option value="user">User</option>
+            </select>
+            <br/>
+            <button type="submit">Create</button>
+        </form>
+    </div>
 </body>
 </html>
+
+<script>
+    function deleteUser(user){
+
+    }
+</script>
