@@ -5,7 +5,6 @@ import hashlib
 
 
 app = Flask(__name__)
-DATABASE = {}
 
 
 def generate_resource_uid(name, number):
@@ -175,7 +174,7 @@ def manage_resources(user, uid=""):
                 generated = generate_resource_uid(user, created)
 
                 # todo: figure out why this doesn't change
-                created += 1
+                userdata["Created"] += 1
                 resources.add(generated)
                 # redirect
                 return redirect(url_for('manage_resources', user=user))
@@ -196,6 +195,8 @@ def manage_resources(user, uid=""):
 
 
 if __name__ == '__main__':
+
+    DATABASE = {}
     initDB()
     # set secret for session
     app.secret_key = b'super_secret_key'

@@ -3,11 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>Resources</title>
+
+    <script>
+    function deleteResource(user, uid){
+        const Http = new XMLHttpRequest();
+        const url='http://localhost:8080/resources/'+user+'/'+uid;
+        Http.open("DELETE", url);
+        Http.send();
+        Http.onreadystatechange=(e)=>{
+            location.reload();
+        }
+    }
+    </script>
+
+
 </head>
 <body>
     <!-- Create, Delete, List resources -->
     <div>
         <span>Resources for {{ user }} | Total: {{ used }}/{{ quota }}</span>
+        <form action="/resources/{{user}}" method="post">
+            <button type="submit">Add New Resource</button>
+        </form>
 
         <table>
             <tr>
@@ -31,20 +48,15 @@
                         | {{ item }}
                     </td>
                     <td>
-                        <button onclick="deleteResource({{user}}, {{uid}})">Delete</button>
+                        <button onclick="deleteResource('{{user}}', '{{item}}')">Delete</button>
                     </td>
                 </tr>
             {% endfor %}
         </table>
 
     </div>
-    <form action="/resources/{{user}}" method="post">
-        <button type="submit">Add New Resource</button>
-    </form>
+
 </body>
 </html>
 
-<script>
-    function deleteResource(user, uid){
-    }
-</script>
+
