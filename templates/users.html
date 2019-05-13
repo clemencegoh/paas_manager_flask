@@ -3,40 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Users List</title>
+
+    <script>
+    function deleteUser(user){
+        const Http = new XMLHttpRequest();
+        const url='http://localhost:8080/users/'+user;
+        Http.open("DELETE", url);
+        Http.send();
+        Http.onreadystatechange=(e)=>{
+            location.reload();
+        }
+    }
+    </script>
+
+
 </head>
 <body>
-    <span>Showing all current users:</span>
-    <div>
-        <table>
-            <tr>
-                <td>
-                    Name
-                </td>
-                <td>
-                    | Type
-                </td>
-            </tr>
-
-
-            {% for key, value in users.items() %}
-            <tr>
-                <td>
-                    {{ key }}
-                </td>
-                <td>
-                    | {{ value["Type"] }}
-                </td>
-                <td>
-                    <button onclick="deleteUser({{key}});">Delete</button>
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
 
     <div>
         <span>Create New User?</span>
-        <form action="/users">
+        <form action="/users" method="post">
             Name <input type="text" name="name">
             <br/>
             Password <input type="text" name="password">
@@ -50,11 +36,46 @@
             <button type="submit">Create</button>
         </form>
     </div>
+
+    <br/>
+
+    <!-- list users -->
+    <span>Showing all current users:</span>
+    <div>
+        <table>
+            <tr>
+                <td>
+                    Name
+                </td>
+                <td>
+                    | Type
+                </td>
+                <td>
+                    | Resources Held
+                </td>
+            </tr>
+
+
+            {% for key, value in users.items() %}
+            <tr>
+                <td>
+                    {{ key }}
+                </td>
+                <td>
+                    | {{ value["Type"] }}
+                </td>
+                <td>
+                    | {{ resources }}/{{ quota }}
+                </td>
+                <td>
+                    <button onclick="deleteUser('{{key}}');">Delete</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+
 </body>
 </html>
 
-<script>
-    function deleteUser(user){
-
-    }
-</script>

@@ -96,8 +96,11 @@ def manage_users(user='none'):
     global DATABASE
 
     if request.method=='GET':
-        # list users
-        return render_template('users.html', users=DATABASE["users"])
+        # list users only if person is admin
+        if session['Type'] == 'admin':
+            return render_template('users.html',
+                                   users=DATABASE["users"])
+        return Response("Not authorized", 403)
 
     if request.method=='POST': # create user
         username = request.form.get('name')
@@ -114,6 +117,9 @@ def manage_users(user='none'):
                 "Resources": set([]),
                 "Created": 0,
             }
+            print('completed')
+            print('current:', DATABASE["users"])
+
             # redirect with get
             return redirect(url_for('manage_users'))
         return Response("Not Authorized", 403)
@@ -123,13 +129,11 @@ def manage_users(user='none'):
         if session['Type'] == 'admin':
             # check and execute task (deletes user)
             try:
-                del DATABASE[user]
+                if session['name'] == user:
+                    return Response('Cannot delete yourself', 401)
+                del DATABASE["users"][user]
             except KeyError:
                 print("{} does not exist".format(user))
-            # check if current user still valid
-            if session['name'] == user:
-                session.clear()
-                return redirect(url_for('index'))
             return redirect(url_for('manage_users'))
         return Response("Not Authorized", 403)
 
@@ -173,7 +177,6 @@ def manage_resources(user, uid=""):
                 # execute task
                 generated = generate_resource_uid(user, created)
 
-                # todo: figure out why this doesn't change
                 userdata["Created"] += 1
                 resources.add(generated)
                 # redirect
